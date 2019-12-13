@@ -74,7 +74,7 @@ function movieSelected(id) {
 function getMovie() {
     let movieID = sessionStorage.getItem('movieID');
     // console.log(movieID);
-    fetch('http://www.omdbapi.com/?i=' + movieID + '&apikey=9c0c00b8')
+    fetch('https://cors-anywhere.herokuapp.com/http://www.omdbapi.com/?i=' + movieID + '&apikey=9c0c00b8')
         .then((response) => {
             return response.json();
         })
