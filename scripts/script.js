@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function formSubmit(e) {
     e.preventDefault();
     let title = document.getElementById('movieTitle').value.split(' ').join('+');
-    console.log(title)
+    // console.log(title)
     let year = document.getElementById('movieYear').value;
     let type = document.getElementById('movieType').value;
     getMovies(title, year, type);
@@ -14,24 +14,28 @@ function formSubmit(e) {
 
 function getMovies(title, year, type) {
     document.getElementById('movieList').innerHTML = '';
-    let baseUrl = 'http://www.omdbapi.com/?';
+    let baseUrl = 'https://cors-anywhere.herokuapp.com/http://www.omdbapi.com/?';
     let apiCode = '&apikey=9c0c00b8';
+    let defaultPoster = 'https://jct-zhixinhe.co.th/wp-content/uploads/2018/07/NO-IMAGE.png'
     fetch(baseUrl + 's=' + title + '&y=' + year + '&type=' + type + apiCode)
         .then((response) => {
+            // console.log(response)
             return response.json();
         })
         .then((data) => {
-            console.log(data)
-            return data.Search;
+            // console.log(data)
+            if (data.Response == 'False') {
+                throw Error(data.Error)
+            } else return data.Search;
         })
         .then((movies) => {
             let markUp = '';
             movies.forEach((movie) => {
                 markUp += `
-                    <div class="col s12 m4 l3">
+                    <div class="col s12 m7 l3">
                         <div class="card large">
-                            <div class="card-image">
-                             <img src="${movie.Poster}" class='poster'>
+                            <div class="card-image" style='height: fit-content;'>
+                             <img src="${movie.Poster != 'N/A' ? movie.Poster : defaultPoster}"  class='responsive-image materialboxed' style='height: 320px;'>
                             </div>
                             <div class="card-content">
                                 <h4 class='teal-text flow-text'>${movie.Title}</h4>
@@ -47,8 +51,16 @@ function getMovies(title, year, type) {
             document.getElementById('movieList').insertAdjacentHTML('afterbegin', markUp);
         })
         .catch((error) => {
-            console.log(error);
+            errorHandler(error);
         })
+}
+
+function errorHandler(err) {
+    document.getElementById('errorLog').innerText = err;
+    setTimeout(() => {
+        document.getElementById('errorLog').innerText = '';
+
+    }, 3000);
 }
 
 function movieSelected(id) {
@@ -72,7 +84,7 @@ function getMovie() {
                 <br>
                 <div class='container'>
                     <div class='col l4 m6 s12'>
-                        <img src="${movie.Poster}" >
+                        <img src="${movie.Poster}" class='materialboxed'>
                     </div>
                     <div class='col l8  m6 s12'>
                         <h3 class='teal-text'>${movie.Title}</h3>
